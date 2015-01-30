@@ -24,22 +24,36 @@ object ReportWriter {
                    coverageOutputHTML: Boolean,
                    coverageDebug: Boolean): Unit = {
 
+    println("[scoverage] Generating scoverage reports...")
+
     if (coverageOutputCobertura) {
-      new CoberturaXmlWriter(baseDirectory, dir(outputDirectory, "cobertura")).write(coverage)
+      val coberturaDir = dir(outputDirectory, "cobertura")
+      new CoberturaXmlWriter(baseDirectory, coberturaDir).write(coverage)
+      val filePath = coberturaDir.getAbsolutePath + File.separator + "cobertura.xml"
+      println(s"[scoverage] Written Cobertura report to $filePath")
     }
 
     if (coverageOutputXML) {
       val xmlDir = dir(outputDirectory, "xml")
       new ScoverageXmlWriter(baseDirectory, xmlDir, false).write(coverage)
+      val filePath = xmlDir.getAbsolutePath + File.separator + Constants.XMLReportFilename
+      println(s"[scoverage] Written XML report to $filePath")
+
       if (coverageDebug) {
         new ScoverageXmlWriter(baseDirectory, xmlDir, true).write(coverage)
+        val filePath = xmlDir.getAbsolutePath + File.separator + Constants.XMLReportFilenameWithDebug
+        println(s"[scoverage] Written XML report with debug information to $filePath")
       }
     }
 
     if (coverageOutputHTML) {
-      new ScoverageHtmlWriter(baseDirectory, dir(outputDirectory, "html")).write(coverage)
+      val htmlDir = dir(outputDirectory, "html")
+      val filePath = htmlDir.getAbsolutePath + File.separator + "index.html"
+      new ScoverageHtmlWriter(baseDirectory, htmlDir).write(coverage)
+      println(s"[scoverage] Written HTML report to $filePath")
     }
 
+    println("[scoverage] Coverage reports completed")
   }
 }
 
